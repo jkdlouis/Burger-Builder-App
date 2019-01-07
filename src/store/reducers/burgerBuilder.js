@@ -1,4 +1,5 @@
 import * as actionTypes from '../actions/actionTypes';
+import { updateObject } from "../utility";
 
 const initialState = {
     ingredients: null,
@@ -14,43 +15,45 @@ const INGREDIENT_PRICES = {
     bacon: 0.7
 };
 
+const addRemoveIngredient = (state, action, type) => {
+    let updatedIngredient;
+
+    if (type === 'add') {
+        updatedIngredient = { [action.ingredientName]: state.ingredients[action.ingredientName] + 1 };
+    }
+
+    if (type === 'remove') {
+        updatedIngredient = { [action.ingredientName]: state.ingredients[action.ingredientName] - 1 };
+    }
+
+    const updatedIngredients = updateObject(state.ingredients, updatedIngredient);
+    const updatedState = {
+        ingredients: updatedIngredients,
+        totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName]
+    };
+
+    return updateObject(state, updatedState);
+};
+
+const setIngredient = (state, action) => {
+    return updateObject(state, {
+        ingredients: {
+            salad: action.ingredients.salad,
+            bacon: action.ingredients.bacon,
+            cheese: action.ingredients.cheese,
+            meat: action.ingredients.meat
+        },
+        totalPrice: 4,
+        error: false
+    });
+};
+
 const burgerBuilder = (state = initialState, action) => {
    switch (action.type) {
-       case actionTypes.ADD_INGREDIENT:
-           return {
-               ...state,
-               ingredients: {
-                   ...state.ingredients,
-                   [action.ingredientName]: state.ingredients[action.ingredientName] + 1
-               },
-               totalPrice: state.totalPrice + INGREDIENT_PRICES[action.ingredientName]
-           };
-       case actionTypes.REMOVE_INGREDIENT:
-           return {
-               ...state,
-               ingredients: {
-                   ...state.ingredients,
-                   [action.ingredientName] : state.ingredients[action.ingredientName] - 1
-               },
-               totalPrice: state.totalPrice - INGREDIENT_PRICES[action.ingredientName]
-           };
-       case actionTypes.SET_INGREDIENT:
-           return {
-               ...state,
-               ingredients: {
-                   salad: action.ingredients.salad,
-                   bacon: action.ingredients.bacon,
-                   cheese: action.ingredients.cheese,
-                   meat: action.ingredients.meat
-               },
-               totalPrice: 4,
-               error: false
-           };
-       case actionTypes.FETCH_INGREDIENT_FAILED:
-           return {
-               ...state,
-               error: true
-           };
+       case actionTypes.ADD_INGREDIENT: return addRemoveIngredient(state, action, 'add');
+       case actionTypes.REMOVE_INGREDIENT: return addRemoveIngredient(state, action, 'remove');
+       case actionTypes.SET_INGREDIENT: return setIngredient(state, action);
+       case actionTypes.FETCH_INGREDIENT_FAILED: return updateObject(state, { error: true });
        default:
            return state;
    }
