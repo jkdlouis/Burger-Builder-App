@@ -11,11 +11,22 @@ const initialState = {
 
 const authStart = (state) => updateObject(state, { error: null, loading: true });
 
-const authSuccess = (state, action) => updateObject(state, { token: action.idToken, userId: action.userId, error: null, loading: false });
+const authSuccess = (state, action) => updateObject(state, {
+    token: action.idToken,
+    userId: action.userId,
+    error: null,
+    loading: false
+});
 
-const authFail = (state, action) => updateObject(state, { error: action.error, loading: false });
+const authFail = (state, action) => updateObject(state, {
+    error: action.error,
+    loading: false
+});
 
-const authLogout = (state) => updateObject(state, { token: null, userId: null });
+const authLogout = (state) => updateObject(state, {
+    token: null,
+    userId: null
+});
 
 const setAuthRedirectPath = (state, action) => updateObject(state, { authRedirectPath: action.path });
 
