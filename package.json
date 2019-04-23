@@ -1,5 +1,6 @@
 {
   "name": "burger-builder-app",
+  "author": "Louis Huang",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
